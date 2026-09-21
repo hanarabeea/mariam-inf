@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Omar &amp; Mariam</title>
+<meta name="description" content="Wedding Invitation">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Marcellus&family=Tenor+Sans&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #4a4330;      /* main text colour */
+    --olive: #4f4c29;    /* button + monogram colour */
+    --btn-text: #f3ece2;
+    /* the artwork is 480 x 2771 "design pixels"; everything is placed on that grid */
+    --H: 2771;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #e9dfd2; }
+  body { display: flex; justify-content: center; min-height: 100vh; color: var(--ink); }
+
+  .invite {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    container-type: inline-size;       /* 1cqw = 1% of the invite width */
+    box-shadow: 0 0 40px rgba(90, 70, 40, .15);
+    font-family: "Marcellus", serif;
+    text-align: center;
+    overflow: hidden;
+  }
+  .art { position: relative; }   /* all text is positioned inside the artwork */
+  .bg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+
+  /* a block placed at a design-pixel Y position */
+  .block {
+    position: absolute;
+    top: calc(var(--y) / var(--H) * 100%);
+    left: calc(var(--x0, 120) / 480 * 100%);
+    right: calc((480 - var(--x1, 360)) / 480 * 100%);
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* ---------- Monogram ---------- */
+  /* the monogram shape comes from assets/monogram.png (transparent PNG), painted in --olive */
+  .mono {
+    aspect-ratio: 195 / 413;
+    background: var(--olive);
+    -webkit-mask: url("assets/monogram.png") center / contain no-repeat;
+            mask: url("assets/monogram.png") center / contain no-repeat;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero .mono { height: 21cqw; margin-top: -1cqw; }
+  .names {
+    display: flex; align-items: flex-start; justify-content: center; gap: 1.2cqw;
+    margin-top: 3.4cqw;
+  }
+  .names .person { display: flex; flex-direction: column; align-items: center; }
+  .names .first { font-family: "Great Vibes", cursive; font-size: 7.3cqw; line-height: 1; }
+  .names .last  { font-family: "Tenor Sans", sans-serif; font-size: 2.3cqw; letter-spacing: .12em; margin-top: -.3cqw; }
+  .names .amp   { font-family: "Great Vibes", cursive; font-size: 6cqw; margin-top: 2.6cqw; }
+  .hero .intro   { font-size: 3.35cqw; line-height: 1.2; margin-top: 6.4cqw; }
+  .hero .occasion{ font-size: 4.7cqw;  line-height: 1.05; margin-top: 7.2cqw; }
+  .hero .date    { font-size: 4.5cqw;    line-height: 1.35; margin-top: 5.8cqw; }
+  .hero .date sup { font-size: .55em; vertical-align: .75em; }
+
+  /* ---------- Save the date / countdown ---------- */
+  .sd .lead    { font-size: 3.65cqw; line-height: 1.22; }
+  .sd .forever { font-size: 5cqw;    line-height: 1;    margin-top: 3.8cqw; }
+  .countdown { display: flex; align-items: flex-start; justify-content: center; margin-top: 3.9cqw; }
+  .countdown .unit { display: flex; flex-direction: column; align-items: center; min-width: 11cqw; }
+  .countdown .num  { font-family: "Tenor Sans", sans-serif; font-size: 7.4cqw; line-height: 1; }
+  .countdown .colon{ font-family: "Tenor Sans", sans-serif; font-size: 7cqw; line-height: 1; padding: 0 .6cqw; }
+  .countdown .lbl  { font-family: "Tenor Sans", sans-serif; font-size: 1.5cqw; letter-spacing: .1em; text-transform: uppercase; margin-top: 2.2cqw; }
+  .countdown .unit:first-child { min-width: 6cqw; }
+  .sd .save { font-size: 5.1cqw; margin-top: 4.4cqw; }
+
+  /* ---------- Venue / date / time ---------- */
+  .icon { width: 10cqw; height: auto; color: var(--ink); }
+  .venue .place   { font-size: 3.85cqw; margin-top: 2.2cqw; }
+  .venue .address { font-size: 3.85cqw; line-height: 1.1; margin-top: 3cqw; }
+  .btn {
+    display: inline-block; margin-top: 1.2cqw;
+    background: var(--olive); color: var(--btn-text);
+    font-family: "Marcellus", serif; font-size: 4cqw; line-height: 1;
+    padding: 1.2cqw 8.5cqw 1.1cqw; border-radius: 999px; text-decoration: none;
+    transition: transform .2s ease, filter .2s ease;
+  }
+  .btn:hover { filter: brightness(1.15); }
+  .btn:active { transform: scale(.97); }
+  .venue .icon.cal   { width: 8.5cqw; margin-top: 12cqw; }
+  .venue .day        { font-size: 4.1cqw; line-height: 1.15; margin-top: 3cqw; }
+  .venue .icon.clock { width: 8.8cqw; margin-top: 15.5cqw; }
+  .venue .time       { font-size: 4.1cqw; margin-top: 2.6cqw; }
+
+  /* ---------- Couple photo ---------- */
+  /* Photo box in design pixels (page is 480 wide). Make it bigger/smaller by
+     changing these four numbers; the photo always sits on the bottom edge. */
+  .photo {
+    --px: 36;  --pw: 408;    /* left edge, width   */
+    --py: 2062; --ph: 504;   /* top edge,  height (bottom = 2566, the pink ledge) */
+    position: absolute;
+    left:   calc(var(--px) / 480 * 100%);
+    width:  calc(var(--pw) / 480 * 100%);
+    top:    calc(var(--py) / var(--H) * 100%);
+    height: calc(var(--ph) / var(--H) * 100%);
+    object-fit: contain; object-position: center bottom;
+    /* soft fade on the left/right edges so a cut-off veil or sleeve blends in */
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%);
+  }
+
+  /* ---------- Footer monogram in the pink sun ---------- */
+  .sun {
+    position: absolute;
+    left: calc(235 / 480 * 100%);
+    top:  calc(2662 / var(--H) * 100%);
+    transform: translate(-50%, -50%);
+  }
+  .sun .mono { height: 15.5cqw; }
+
+  /* ---------- Credit footer ---------- */
+  .credit {
+    background: #f3ece2;
+    padding: 5cqw 4cqw 6cqw;
+    font-family: "Marcellus", serif;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .credit .made { font-size: 3.6cqw; }
+  .credit .made a { color: var(--olive); font-weight: 700; text-decoration: none; border-bottom: 1px solid currentColor; }
+  .credit .made a:hover { opacity: .75; }
+  .credit .heart { color: #d98b8b; }
+  .credit .rights { font-size: 2.8cqw; opacity: .8; letter-spacing: .04em; }
+
+  /* entrance */
+  .invite { animation: fade 1.2s ease both; }
+  @keyframes fade { from { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .invite { animation: none; } }
+</style>
+</head>
+<body>
+<main class="invite">
+ <div class="art">
+  <img class="bg" src="assets/background.webp" alt="" width="1920" height="11084">
+
+  <!-- ================= HERO ================= -->
+  <section class="block hero" style="--y:206; --x0:122; --x1:358">
+    <!-- Monogram: the shape lives in assets/monogram.png (used here and in the footer sun) -->
+    <div class="mono" role="img" aria-label="ع م monogram"></div>
+
+    <div class="names">
+      <div class="person"><span class="first">Omar</span><span class="last">OTHMAN</span></div>
+      <span class="amp">&amp;</span>
+      <div class="person"><span class="first">Mariam</span><span class="last">MUSAAD</span></div>
+    </div>
+
+    <p class="intro">Together with their families<br>invite you to celebrate their</p>
+    <p class="occasion">Wedding<br>day on the</p>
+    <p class="date">30<sup>th</sup> of October<br>2026</p>
+  </section>
+
+  <!-- ================= SAVE THE DATE ================= -->
+  <section class="block sd" style="--y:872; --x0:112; --x1:368">
+    <p class="lead">We invite you to celebrate<br>The beginning of</p>
+    <p class="forever">Our<br>Forever</p>
+
+    <div class="countdown" aria-live="polite">
+      <div class="unit"><span class="num" id="cd-d">0</span><span class="lbl">Days</span></div>
+      <span class="colon">:</span>
+      <div class="unit"><span class="num" id="cd-h">00</span><span class="lbl">Hours</span></div>
+      <span class="colon">:</span>
+      <div class="unit"><span class="num" id="cd-m">00</span><span class="lbl">Minutes</span></div>
+      <span class="colon">:</span>
+      <div class="unit"><span class="num" id="cd-s">00</span><span class="lbl">Seconds</span></div>
+    </div>
+
+    <p class="save">Save The Date</p>
+  </section>
+
+  <!-- ================= VENUE / DATE / TIME ================= -->
+  <section class="block venue" style="--y:1566; --x0:130; --x1:350">
+    <!-- location pin with dotted path -->
+    <svg class="icon" viewBox="0 0 48 44" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+      <path d="M17 38s-8-9.2-8-15.2a8 8 0 0 1 16 0C25 28.8 17 38 17 38z" fill="currentColor" stroke="none"/>
+      <circle cx="17" cy="22.6" r="3.2" fill="#f6efe6" stroke="none"/>
+      <path d="M22 37c6 1 14-2 10-8s-4-9 3-13 4-9 2-11" stroke-dasharray="2 2.4" stroke-linecap="round"/>
+      <circle cx="37.5" cy="4" r="1.8" fill="currentColor" stroke="none"/>
+    </svg>
+    <p class="place">Le Ciel Hotel</p>
+    <p class="address">Salah Salem St, Nasr City<br>Cairo</p>
+    <!-- put the real Google Maps link in href -->
+    <a class="btn" href="https://maps.app.goo.gl/LADS8BrPZASSwFDi8" target="_blank" rel="noopener">Location</a>
+
+    <!-- calendar -->
+    <svg class="icon cal" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+      <rect x="4" y="7" width="32" height="29" rx="3"/>
+      <path d="M4 14h32M12 3v7M28 3v7"/>
+      <g fill="currentColor" stroke="none">
+        <rect x="8"  y="18" width="4" height="3"/><rect x="14" y="18" width="4" height="3"/><rect x="20" y="18" width="4" height="3"/><rect x="26" y="18" width="4" height="3"/>
+        <rect x="8"  y="23" width="4" height="3"/><rect x="14" y="23" width="4" height="3"/><rect x="20" y="23" width="4" height="3"/><rect x="26" y="23" width="4" height="3"/>
+        <rect x="8"  y="28" width="4" height="3"/><rect x="14" y="28" width="4" height="3"/><rect x="20" y="28" width="4" height="3"/><rect x="26" y="28" width="4" height="3"/>
+      </g>
+    </svg>
+    <p class="day">30.10.2026<br>Friday</p>
+
+    <!-- clock -->
+    <svg class="icon clock" viewBox="0 0 40 42" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+      <path d="M17 3h6M20 3v4"/>
+      <circle cx="20" cy="23" r="16"/>
+      <circle cx="20" cy="23" r="13.5" stroke-width=".8"/>
+      <path d="M20 23V13.5M20 23l-5.5 5.5" stroke-linecap="round"/>
+    </svg>
+    <p class="time">6.00 pm</p>
+  </section>
+
+  <!-- ================= COUPLE PHOTO ================= -->
+  <!-- NEW PHOTO: save it as  assets/couple.png  (a cut-out with a transparent
+       background looks best). If that file doesn't exist, the old
+       assets/couple.jpg is shown instead. -->
+  <img class="photo" src="assets/couple.png" alt="The couple"
+       onerror="this.onerror=null; this.src='assets/couple.jpg';">
+
+  <!-- ================= FOOTER MONOGRAM ================= -->
+  <div class="sun">
+    <div class="mono" role="img" aria-label="ع م monogram"></div>
+  </div>
+ </div>
+
+  <!-- ================= CREDIT ================= -->
+  <footer class="credit">
+    <p class="made">Made with <span class="heart">&#9829;</span> by
+      <a href="https://www.instagram.com/digitiva.co?stkn=bGdoN2pkdzNhNjBw" target="_blank" rel="noopener">Digitiva</a></p>
+    <p class="rights">&copy; 2026 All rights reserved</p>
+  </footer>
+</main>
+
+<script>
+  // ===== Countdown target: wedding date & time (Cairo time; +02:00 after DST ends on 29 Oct 2026) =====
+  const WEDDING = new Date("2026-10-30T18:00:00+02:00").getTime();
+
+  const pad = n => String(n).padStart(2, "0");
+  const $ = id => document.getElementById(id);
+  function tick() {
+    let t = Math.max(0, Math.floor((WEDDING - Date.now()) / 1000));
+    const d = Math.floor(t / 86400); t %= 86400;
+    const h = Math.floor(t / 3600);  t %= 3600;
+    $("cd-d").textContent = d;
+    $("cd-h").textContent = pad(h);
+    $("cd-m").textContent = pad(Math.floor(t / 60));
+    $("cd-s").textContent = pad(t % 60);
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
