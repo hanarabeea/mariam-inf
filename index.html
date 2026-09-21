@@ -4,7 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Omar &amp; Mariam</title>
-<meta name="description" content="Wedding Invitation">
+<meta name="description" content="You're invited to the wedding of Omar & Mariam — Friday, 30 October 2026 at 6:00 PM, Le Ciel Hotel, Nasr City, Cairo.">
+<link rel="canonical" href="https://omar-mariam.digitivaa.com/">
+
+<!-- ===== Link preview (WhatsApp, Facebook, Instagram, iMessage, X…) ===== -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://omar-mariam.digitivaa.com/">
+<meta property="og:site_name" content="Omar &amp; Mariam">
+<meta property="og:title" content="You're Invited 💍 Omar &amp; Mariam's Wedding">
+<meta property="og:description" content="Join us to celebrate our wedding — Friday, 30 October 2026 at 6:00 PM, Le Ciel Hotel, Nasr City, Cairo.">
+<meta property="og:image" content="https://omar-mariam.digitivaa.com/assets/preview.jpeg">
+<meta property="og:image:secure_url" content="https://omar-mariam.digitivaa.com/assets/preview.jpeg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1056">
+<meta property="og:image:height" content="1600">
+<meta property="og:image:alt" content="Omar &amp; Mariam wedding invitation">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="You're Invited 💍 Omar &amp; Mariam's Wedding">
+<meta name="twitter:description" content="Join us to celebrate our wedding — Friday, 30 October 2026 at 6:00 PM, Le Ciel Hotel, Nasr City, Cairo.">
+<meta name="twitter:image" content="https://omar-mariam.digitivaa.com/assets/preview.jpeg">
+<meta name="theme-color" content="#f3ece2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Marcellus&family=Tenor+Sans&display=swap" rel="stylesheet">
@@ -135,6 +154,22 @@
   .credit .heart { color: #d98b8b; }
   .credit .rights { font-size: 2.8cqw; opacity: .8; letter-spacing: .04em; }
 
+  /* ---------- Music: mute / unmute button ---------- */
+  .music-btn {
+    position: fixed; right: 16px; bottom: 16px; z-index: 999;
+    width: 48px; height: 48px; border-radius: 50%; border: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--olive); color: var(--btn-text);
+    box-shadow: 0 4px 14px rgba(60, 50, 30, .3);
+    transition: filter .2s ease, transform .2s ease;
+  }
+  .music-btn:hover { filter: brightness(1.15); }
+  .music-btn:active { transform: scale(.94); }
+  .music-btn svg { width: 22px; height: 22px; }
+  .music-btn .off { display: none; }
+  .music-btn.muted .on  { display: none; }
+  .music-btn.muted .off { display: block; }
+
   /* entrance */
   .invite { animation: fade 1.2s ease both; }
   @keyframes fade { from { opacity: 0; } }
@@ -142,6 +177,16 @@
 </style>
 </head>
 <body>
+<!-- ================= MUSIC ================= -->
+<!-- The song file is assets/wedding-song.mp3. After replacing it, raise the ?v= number
+     (v=2 → v=3 …) so phones/browsers load the new song instead of a cached copy. -->
+<audio id="song" src="assets/wedding-song.mp3?v=2" loop playsinline preload="auto"></audio>
+
+<!-- Mute / unmute button -->
+<button class="music-btn muted" id="musicBtn" type="button" aria-label="Play music">
+  <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+  <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor"/><path d="m22 9-6 6M16 9l6 6"/></svg>
+</button>
 <main class="invite">
  <div class="art">
   <img class="bg" src="assets/background.webp" alt="" width="1920" height="11084">
@@ -237,6 +282,43 @@
   </footer>
 </main>
 
+<script>
+  // ===== Music: plays when the link opens =====
+  // Browsers only allow sound after the visitor interacts with the page, so we
+  // try to play right away, and if that's blocked, start on the first touch/click/key.
+  const song = document.getElementById("song");
+  const musicBtn = document.getElementById("musicBtn");
+  let userMuted = false;
+
+  const syncBtn = () => {
+    const off = song.paused || song.muted;
+    musicBtn.classList.toggle("muted", off);
+    musicBtn.setAttribute("aria-label", off ? "Play music" : "Mute music");
+  };
+  const tryPlay = () => {
+    if (userMuted || !song.paused) return;
+    song.muted = false;
+    song.play().then(syncBtn).catch(() => {});
+  };
+
+  tryPlay();                                   // attempt autoplay on load
+  window.addEventListener("load", tryPlay);
+  ["pointerdown", "touchstart", "keydown", "click"].forEach(evt =>
+    document.addEventListener(evt, e => {
+      if (musicBtn.contains(e.target)) return;   // the button handles itself
+      tryPlay();
+    }, { passive: true }));
+  song.addEventListener("play", syncBtn);
+  song.addEventListener("pause", syncBtn);
+
+  musicBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    if (song.paused) { userMuted = false; song.muted = false; song.play().then(syncBtn).catch(() => {}); return; }
+    song.muted = !song.muted;
+    userMuted = song.muted;
+    syncBtn();
+  });
+</script>
 <script>
   // ===== Countdown target: wedding date & time (Cairo time; +02:00 after DST ends on 29 Oct 2026) =====
   const WEDDING = new Date("2026-10-30T18:00:00+02:00").getTime();
